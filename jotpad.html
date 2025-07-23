@@ -68,10 +68,14 @@
       background-color: #19352d;
     }
 
-  .note-box:empty::before {
+  .note-box.empty::before {
     content: attr(data-placeholder);
     color: #888;
     pointer-events: none;
+  }
+  
+  .note-box:focus.empty::before {
+    opacity: 0.5;
   }
   </style>
 </head>
@@ -100,11 +104,40 @@
       doc.text(content, 10, 20, { maxWidth: 180 });
       doc.save("MyNotes.pdf");
     }
+    
     const note = document.getElementById("noteArea");
-  note.innerHTML = localStorage.getItem("noteContent") || "";
-  note.addEventListener("input", () => {
-    localStorage.setItem("noteContent", note.innerHTML);
-  });
+    
+    // Load saved content
+    note.innerHTML = localStorage.getItem("noteContent") || "";
+    
+    // Function to handle placeholder visibility
+    function handlePlaceholder() {
+      const text = note.innerText.trim();
+      if (text === "") {
+        note.classList.add("empty");
+      } else {
+        note.classList.remove("empty");
+      }
+    }
+    
+    // Handle input events
+    note.addEventListener("input", () => {
+      localStorage.setItem("noteContent", note.innerHTML);
+      handlePlaceholder();
+    });
+    
+    // Handle focus events
+    note.addEventListener("focus", () => {
+      handlePlaceholder();
+    });
+    
+    // Handle blur events
+    note.addEventListener("blur", () => {
+      handlePlaceholder();
+    });
+    
+    // Initial placeholder check
+    handlePlaceholder();
   </script>
 </body>
 </html>
